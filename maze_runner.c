@@ -401,13 +401,17 @@ int main()
         
             graph->array[currentNode].X = X;
             graph->array[currentNode].Y = Y;
+            if(!end)
+            {
+                printf("\nend ?: ");
+                scanf("%d",&end);
+                endFlag = 1;
+            }
 
-            printf("\nend ?: ");
-            scanf("%d",&end);
-            if(end)
+            if(endFlag)
             {
                 finish = currentNode;
-                // endFlag = 1;
+                endFlag=0;
             }	
             else
             {
@@ -482,7 +486,7 @@ int main()
         } 
         printf("\nturns: %d",turns);
         // bot going to explore a previously unexplored direction
-        
+        printf("\nend: %d",end);
         if(end && !turns)
             break;	
         
@@ -502,10 +506,15 @@ int main()
         prevNode = currentNode;
 
         // print logs
+        printf("\nend: %d",end);
         printf("\nturns: %d",turns);
         printf("\ncurrent: %d",currentNode);
         printf("\nfinish: %d",finish);
         printf("\nincomplete: %d",graph->array[currentNode].incomplete);
+        printf("\ndirection 0: %d",graph->array[currentNode].dir[0]);
+        printf("\ndirection 1: %d",graph->array[currentNode].dir[1]);
+        printf("\ndirection 2: %d",graph->array[currentNode].dir[2]);
+        printf("\ndirection 3: %d",graph->array[currentNode].dir[3]);
         
     }
     
