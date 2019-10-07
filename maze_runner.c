@@ -49,6 +49,8 @@ struct Graph* createGraph()
     graph->V = 1; 
 	graph->array = (struct AdjList*) malloc(graph->V * sizeof(struct AdjList)); 
     graph->array[0].head = NULL; 
+    for(int i=0;i<4;i++)
+        graph->array[0].dir[i] = -1;
 	return graph; 
 }
 
@@ -56,7 +58,9 @@ struct Graph* updateGraph(struct Graph* graph)
 {
     graph->V+=1;
     graph->array = (struct AdjList*) realloc(graph->array,graph->V*sizeof(struct AdjList));
-    graph->array[graph->V-1].head = NULL; 
+    graph->array[graph->V-1].head = NULL;
+    for(int i=0;i<4;i++)
+        graph->array[graph->V-1].dir[i] = -1;
     return graph;
 }
 
@@ -262,12 +266,14 @@ int* getDirection(struct Graph* graph,int parent[], int src, int dest)
             {
                 min = pCrawl->weight;
                 dir[capacity-1] = pCrawl->dir;
+                //printArr(dir,capacity);
             }
             pCrawl = pCrawl->next;
         }
         px=nx;
     }
     reverseArray(dir, 0, capacity-1);
+    printArr(dir,capacity);
     return dir;
 }
 
@@ -405,7 +411,8 @@ int main()
             {
                 printf("\nend ?: ");
                 scanf("%d",&end);
-                endFlag = 1;
+                if(end)
+                    endFlag = 1;
             }
 
             if(endFlag)
@@ -428,6 +435,11 @@ int main()
             }        
         }
         printf("\ncurrent node: %d",currentNode);
+        
+        printf("\ndirection 0: %d",graph->array[currentNode].dir[0]);
+        printf("\ndirection 1: %d",graph->array[currentNode].dir[1]);
+        printf("\ndirection 2: %d",graph->array[currentNode].dir[2]);
+        printf("\ndirection 3: %d",graph->array[currentNode].dir[3]);
 
         // dont do this for start and end
         if(currentNode!=0 && currentNode!=finish)
@@ -476,10 +488,11 @@ int main()
                     {
                         dir = dijkstra(graph, currentNode, i);
                         printf("\nturning");
-                        printArr(dir, sizeof(dir)/sizeof(dir[0]));
+                        printArr(dir, sizeof(dir)/sizeof(dir[0])+1); // +1 nai pata
                         free(dir);
                         currentNode = i;
                         printf("\ncurrent node: %d",currentNode);
+                        break;
                     }
                 }
             }
@@ -520,7 +533,7 @@ int main()
     
     dir = dijkstra(graph, 0,finish);
     printf("\nbot stop");
-    printArr(dir, sizeof(dir)/sizeof(dir[0]));
+    printArr(dir, sizeof(dir)/sizeof(dir[0])+1); // +1 kyu kiya nai pata
     // BOT STOP
     
     return 0;
