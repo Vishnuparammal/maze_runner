@@ -8,28 +8,28 @@
 // A structure to represent a node in adjacency list 
 struct AdjListNode 
 { 
-	int dest=0; 
-	int weight=0;
-	int dir=0; 
-	struct AdjListNode* next=NULL; 
+	int dest; 
+	int weight;
+	int dir; 
+	struct AdjListNode* next; 
 }; 
 
 // A structure to represent an adjacency liat 
 struct AdjList 
 { 
-	struct AdjListNode* head=NULL; // pointer to head node of list 
-	int X=0;
-	int Y=0;
-	int incomplete = 0;
-	int dir[4]={-1,-1,-1,-1};
+	struct AdjListNode* head; // pointer to head node of list 
+	int X;
+	int Y;
+	int incomplete;
+	int dir[4];
 }; 
 
 // A structure to represent a graph. A graph is an array of adjacency lists. 
 // Size of array will be V (number of vertices in graph) 
 struct Graph 
 { 
-	int V=0; 
-	struct AdjList* array=NULL; 
+	int V; 
+	struct AdjList* array; 
 }; 
 
 // A utility function to create a new adjacency list node 
@@ -149,8 +149,8 @@ void minHeapify(struct MinHeap* minHeap, int idx)
     if (smallest != idx) 
     { 
         // The nodes to be swapped in min heap 
-        MinHeapNode *smallestNode = minHeap->array[smallest]; 
-        MinHeapNode *idxNode = minHeap->array[idx]; 
+        struct MinHeapNode *smallestNode = minHeap->array[smallest]; 
+        struct MinHeapNode *idxNode = minHeap->array[idx]; 
   
         // Swap positions 
         minHeap->pos[smallestNode->v] = idx; 
