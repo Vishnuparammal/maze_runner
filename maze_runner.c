@@ -246,7 +246,7 @@ void reverseArray(int arr[],int start, int end)
     } 
 }
 
-int* getDirection(struct Graph* graph,int parent[], int src, int dest)
+int* getDirection(struct Graph* graph,int parent[], int src, int dest, int* dirSize)
 {
     int min = INT_MAX;
     struct AdjListNode* pCrawl = NULL;
@@ -274,12 +274,13 @@ int* getDirection(struct Graph* graph,int parent[], int src, int dest)
     }
     reverseArray(dir, 0, capacity-1);
     printArr(dir,capacity);
+    *dirSize = capacity;
     return dir;
 }
 
 // The main function that calulates distances of shortest paths from src to all 
 // vertices. It is a O(ELogV) function 
-int* dijkstra(struct Graph* graph, int src, int dest) 
+int* dijkstra(struct Graph* graph, int src, int dest, int* dirSize) 
 { 
     int V = graph->V;// Get the number of vertices in graph 
     int dist[V];      // dist values used to pick minimum weight edge in cut 
@@ -339,7 +340,7 @@ int* dijkstra(struct Graph* graph, int src, int dest)
     // print the calculated shortest distances 
     printf("\ninside dijkstra");
     printArr(parent, V);
-    return getDirection(graph, parent, src, dest);
+    return getDirection(graph, parent, src, dest, dirSize);
 } 
 
 //*********************************************************************************************************
@@ -376,7 +377,7 @@ int main()
 
     struct Graph* graph = createGraph();
     int currentNode=0, prevNode=0, X=0, Y=0, dirSrc = 3, dirDest = 3, dist=0, turns = 0, end = 0, endFlag = 0, finish = INT_MAX;
-    int search = 0;
+    int search = 0, dirSize = 0;
     int* dir = NULL;
     // for first node
     struct AdjListNode* pCrawl;
@@ -486,9 +487,9 @@ int main()
                 {
                     if(graph->array[i].incomplete)
                     {
-                        dir = dijkstra(graph, currentNode, i);
+                        dir = dijkstra(graph, currentNode, i, &dirSize);
                         printf("\nturning");
-                        printArr(dir, sizeof(dir)/sizeof(dir[0])+1); // +1 nai pata
+                        printArr(dir, &dirSize); // +1 nai pata
                         free(dir);
                         currentNode = i;
                         printf("\ncurrent node: %d",currentNode);
@@ -531,9 +532,9 @@ int main()
         
     }
     
-    dir = dijkstra(graph, 0,finish);
+    dir = dijkstra(graph, 0, finish, &dirSize);
     printf("\nbot stop");
-    printArr(dir, sizeof(dir)/sizeof(dir[0])+1); // +1 kyu kiya nai pata
+    printArr(dir, dirSize); // +1 kyu kiya nai pata
     // BOT STOP
     
     return 0;
