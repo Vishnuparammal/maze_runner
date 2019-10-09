@@ -489,7 +489,7 @@ int main()
                     {
                         dir = dijkstra(graph, currentNode, i, &dirSize);
                         printf("\nturning");
-                        printArr(dir, &dirSize); // +1 nai pata
+                        printArr(dir, dirSize); // +1 nai pata
                         free(dir);
                         currentNode = i;
                         printf("\ncurrent node: %d",currentNode);
