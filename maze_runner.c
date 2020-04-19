@@ -5,6 +5,11 @@
 #include <stdlib.h> 
 #include <limits.h> 
 
+#define NORTH 0
+#define EAST 1
+#define SOUTH 2
+#define WEST 3
+
 // A structure to represent a node in adjacency list 
 struct AdjListNode 
 { 
@@ -43,14 +48,19 @@ struct AdjListNode* newAdjListNode(int dest, int weight, int dir)
 	return newNode; 
 }
 
+// create a graph and initialize the first node
 struct Graph* createGraph() 
 { 
 	struct Graph* graph = (struct Graph*) malloc(sizeof(struct Graph)); 
-    graph->V = 1; 
+    graph->V = 1;
 	graph->array = (struct AdjList*) malloc(graph->V * sizeof(struct AdjList)); 
-    graph->array[0].head = NULL; 
+    graph->array[0].head = NULL;
+    graph->array[0].X = 0;
+    graph->array[0].Y = 0;
+    graph->array[0].incomplete = 1;
     for(int i=0;i<4;i++)
         graph->array[0].dir[i] = -1;
+    graph->array[0].dir[NORTH] = 0;
 	return graph; 
 }
 
@@ -59,6 +69,9 @@ struct Graph* updateGraph(struct Graph* graph)
     graph->V+=1;
     graph->array = (struct AdjList*) realloc(graph->array,graph->V*sizeof(struct AdjList));
     graph->array[graph->V-1].head = NULL;
+    graph->array[graph->V-1].X = 0;
+    graph->array[graph->V-1].Y = 0;
+    graph->array[graph->V-1].incomplete = 0;
     for(int i=0;i<4;i++)
         graph->array[graph->V-1].dir[i] = -1;
     return graph;
@@ -76,7 +89,14 @@ void addEdge(struct Graph* graph, int src, int dest, int weight, int dirSrc, int
 	newNode = newAdjListNode(src, weight,dirDest); 
 	newNode->next = graph->array[dest].head; 
 	graph->array[dest].head = newNode; 
-} 
+}
+
+void printDir(int dist[], int n) 
+{ 
+    printf("\nStep \t\t Direction\n"); 
+    for (int i = 0; i < n; ++i) 
+        printf("%d \t\t %d\n", i, dist[i]); 
+}
 
 //************************************************************************************
 // Dijkstra - shortest path algorithm
@@ -229,7 +249,7 @@ bool isInMinHeap(struct MinHeap *minHeap, int v)
 // A utility function used to print the solution 
 void printArr(int dist[], int n) 
 { 
-    printf("\nVertex   Distance from Source\n"); 
+    printf("\nVertex \t\t Distance\n"); 
     for (int i = 0; i < n; ++i) 
         printf("%d \t\t %d\n", i, dist[i]); 
 } 
@@ -273,7 +293,7 @@ int* getDirection(struct Graph* graph,int parent[], int src, int dest, int* dirS
         px=nx;
     }
     reverseArray(dir, 0, capacity-1);
-    printArr(dir,capacity);
+    // printArr(dir,capacity);
     *dirSize = capacity;
     return dir;
 }
@@ -338,8 +358,8 @@ int* dijkstra(struct Graph* graph, int src, int dest, int* dirSize)
     } 
   
     // print the calculated shortest distances 
-    printf("\ninside dijkstra");
-    printArr(parent, V);
+    // printf("\ninside dijkstra");
+    // printArr(parent, V);
     return getDirection(graph, parent, src, dest, dirSize);
 } 
 
@@ -375,25 +395,47 @@ int main()
   
     // dijkstra(graph, 0, 0); 
 
-    struct Graph* graph = createGraph();
-    int currentNode=0, prevNode=0, X=0, Y=0, dirSrc = 3, dirDest = 3, dist=0, turns = 0, end = 0, endFlag = 0, finish = INT_MAX;
-    int search = 0, dirSize = 0;
-    int* dir = NULL;
-    // for first node
-    struct AdjListNode* pCrawl;
+    // the code assumes accurate readings from encoders and LSA
+    // the direction in which the bot looks when the run begins is NORTH
+    // the directions are absolute with respect to maze
+    // directions: N: 0, E: 1, S: 2, W: 3
+    // values of direction: -1: no path, 0: path not yet explored, >0: distance to the next node in that direction
     
+    // all initial values are with respect to starting node
+    int currentNode=0, prevNode=0;      
+    int X=0, Y=0;                       // current position of bot
+    int dirSrc = WEST, dirDest = WEST;  // setting initial direction to least preferred (NESW)   why west?   
+    int dist=0;                         // current distance travelled between nodes
+    int turns = 1;                      // total paths left to check in the scanned area ... iska naam pathRemaining kar
+    int end = 0;                        // have we encountered the end node during our scan
+    int endFlag = 0;                    // is the current node the end
+    int finish = -1;                    // store the index number of end node   why max? try -1
+    int search = 0;                     // a loop variable
+    int dirSize = 0;                    // size of direction array that dijkstra returns
+    int* dir = NULL;                    // array of turns to take for shortest path
+    struct AdjListNode* pCrawl;         // pointer for graph traversal
+
+    // create a maze and initialize the first node
+    struct Graph* graph = createGraph();
+
+    // scan the maze till all paths have been explored and we have encountered the end node
     while(!end||turns)
     {
+        // we assume a node has been detected in each iteration of this loop (LSA)
+
+    
         // get these data from bot
+        // facing which direction did the bot enter the node (magnetometer)
+        printf("\ninput> entry dir: "); scanf("%d",&dirDest);
+        // what is the X value when the bot encountered this node (encoder)
+        printf("\ninput> X: ");         scanf("%d",&X);
+        // what is the Y value when the bot encountered this node (encoder)
+        printf("\ninput> Y: ");         scanf("%d",&Y);
+    
 
-        printf("\nentry dir: ");
-        scanf("%d",&dirDest);
-        printf("\nX: ");
-        scanf("%d",&X);
-        printf("\nY: ");
-        scanf("%d",&Y);
 
-        for (search=0;search<graph->V;search++)             // checking if node previously encountered
+        // checking if node previously encountered (linear search)
+        for (search=0;search<graph->V;search++)             
         {
             if(X==graph->array[search].X&&Y==graph->array[search].Y)  
             {
@@ -401,6 +443,9 @@ int main()
                 break;
             }
         }
+
+        // ******************************************************************** 
+        // if current node has not been encountered previously
         if(search==graph->V)                                // newNode
         {
             currentNode=graph->V;
@@ -408,25 +453,29 @@ int main()
         
             graph->array[currentNode].X = X;
             graph->array[currentNode].Y = Y;
+            
+            // check if this node is end node (LSA all black)
             if(!end)
             {
-                printf("\nend ?: ");
-                scanf("%d",&end);
+                printf("\ninput> end ?: ");    scanf("%d",&end);
                 if(end)
                     endFlag = 1;
             }
 
+            // if the current node is end, and you have encountered it for the first time   why?
             if(endFlag)
             {
                 finish = currentNode;
                 endFlag=0;
             }	
+            // if this is not the end node get the possible paths from this node
             else
             {
                 for(int j=0;j<4;j++)
                 {
-                    printf("\ndirection %d: ",j);
+                    printf("\ninput> direction %d: ",j);
                     scanf("%d",&(graph->array[currentNode].dir[j]));    // if dir exist enter 0 else -1
+                    // if there exists a path, increment the turns variable
                     if(graph->array[currentNode].dir[j]==0)
                     {
                         turns+=1;
@@ -435,14 +484,17 @@ int main()
                 }
             }        
         }
-        printf("\ncurrent node: %d",currentNode);
-        
-        printf("\ndirection 0: %d",graph->array[currentNode].dir[0]);
-        printf("\ndirection 1: %d",graph->array[currentNode].dir[1]);
-        printf("\ndirection 2: %d",graph->array[currentNode].dir[2]);
-        printf("\ndirection 3: %d",graph->array[currentNode].dir[3]);
+        // ************************************************************************
+
+        // printf("\noutput> current node: %d",currentNode);
+        // printf("\noutput> direction 0: %d",graph->array[currentNode].dir[0]);
+        // printf("\noutput> direction 1: %d",graph->array[currentNode].dir[1]);
+        // printf("\noutput> direction 2: %d",graph->array[currentNode].dir[2]);
+        // printf("\noutput> direction 3: %d",graph->array[currentNode].dir[3]);
 
         // dont do this for start and end
+        // for any node, we enter from one of its paths
+        // we have to remove this path from remainingPath
         if(currentNode!=0 && currentNode!=finish)
         {
             graph->array[currentNode].incomplete-=1;
@@ -450,67 +502,103 @@ int main()
         }
 
         // setting values of distances to direction of nodes
-        if(prevNode==currentNode)	// start node or looped on same node
+        
+        // if this node is start or we have looped onto same node
+        // we remove entry and exit paths of loop from the remainingPath
+        if(prevNode==currentNode)	
         {    
             graph->array[currentNode].dir[dirSrc] = -1;
             graph->array[currentNode].dir[dirDest] = -1;
         }
-        else 				// for new node or previously encountered node
+        // if this node is different from previous node
+        // we have successfully explored a path
+        else 				
         {
             graph->array[currentNode].dir[dirDest] = dist;
             addEdge(graph, prevNode, currentNode, dist, dirSrc, dirDest);   
         }
-        printf("\nturns: %d",turns);
+
+        // printf("\noutput> turns: %d",turns);
+
+        // *********** beyond this, there are some interesting cases ***********
+        
         // if all directions of current node explored
-        // then do this
-        // *************************************
+        // but there are remaining paths
+        // we need to somehow get there
         if(!graph->array[currentNode].incomplete && turns)
         {
-            // find incomplete node
+            // check each node connected to this node if it is compete or not
+            // if a neighbouring is incomplete, go to that node
             pCrawl = graph->array[currentNode].head;
             while (pCrawl!=NULL)
             {
                 if (graph->array[pCrawl->dest].incomplete)
                 {
-                    printf("\nturning %d",pCrawl->dir);
+                    // bot moves right now
+                    printf("\noutput> moving in direction %d",pCrawl->dir);
                     currentNode = pCrawl->dest;
-                    printf("\ncurrent node: %d",currentNode);
+                    printf("\noutput> current node: %d",currentNode);
                     break;
                 }
                 pCrawl = pCrawl->next;
             }
+
+            // if all neighbouring node were also complete
+            // We check the next node higher in index
+            // If all the nodes from current to highest index are also complete
+            // We check the nodes from start to current node
+            // these checks are within the graph, the bot is still in the current node and has not moved
+
+            // this method can be replace by others like
+            // checking current +- 1, 2, ...
+            // this will give us the nearest indexed incomplete node
+
             if(pCrawl==NULL)
             {   // if x is current node, go from x+1 to max node, then from 1 to current node
                 // the for loop below is enough to handle all completed node decisions
                 // the upper part is just to speed up
                 for(int i=(currentNode+1)%graph->V;i!=currentNode;i=(i+1)%graph->V)
                 {
+                    // if we find an incomplete node
+                    // we use dijkstra algo now itself to find shortest path to that node
                     if(graph->array[i].incomplete)
                     {
                         dir = dijkstra(graph, currentNode, i, &dirSize);
-                        printf("\nturning");
-                        printArr(dir, dirSize); // +1 nai pata
+                        // use this array to move the bot to node i right now
+
+                        printf("\noutput> moving from current node as per directions below");
+                        printDir(dir, dirSize);
                         free(dir);
                         currentNode = i;
-                        printf("\ncurrent node: %d",currentNode);
+                        printf("\noutput> current node: %d",currentNode);
                         break;
                     }
                 }
             }
-        } 
-        printf("\nturns: %d",turns);
-        // bot going to explore a previously unexplored direction
-        printf("\nend: %d",end);
+        }
+
+        // by now we are at an incomplete node
+        // or we have explored all the nodes
+
+        // if all nodes done ... scan completed successfully
+        // printf("\noutput> turns: %d",turns);
+        // printf("\noutput> end: %d",end);
         if(end && !turns)
             break;	
         
+        // if all nodes not done
+        // get the exit direction of bot
+        // and the distance to the next node
+
         // change current node as per dijkstra, then proceed
-        printf("\nleaving dir: ");
+        printf("\ninput> leaving dir: ");
         scanf("%d",&dirSrc);
-        printf("\ndist: ");
+        printf("\ninput> dist: ");
         scanf("%d",&dist);
+
+        // remove this exiting path from remaining paths
         graph->array[currentNode].dir[dirSrc] = dist;
-        if(currentNode!=0 && currentNode!=finish)
+        if(currentNode!=finish)
         {
             graph->array[currentNode].incomplete-=1;
             turns-=1; 
@@ -520,21 +608,23 @@ int main()
         prevNode = currentNode;
 
         // print logs
-        printf("\nend: %d",end);
-        printf("\nturns: %d",turns);
-        printf("\ncurrent: %d",currentNode);
-        printf("\nfinish: %d",finish);
-        printf("\nincomplete: %d",graph->array[currentNode].incomplete);
-        printf("\ndirection 0: %d",graph->array[currentNode].dir[0]);
-        printf("\ndirection 1: %d",graph->array[currentNode].dir[1]);
-        printf("\ndirection 2: %d",graph->array[currentNode].dir[2]);
-        printf("\ndirection 3: %d",graph->array[currentNode].dir[3]);
+        printf("\noutput> end: %d",end);
+        printf("\noutput> turns: %d",turns);
+        printf("\noutput> current: %d",currentNode);
+        printf("\noutput> finish: %d",finish);
+        printf("\noutput> incomplete: %d",graph->array[currentNode].incomplete);
+        printf("\noutput> direction 0: %d",graph->array[currentNode].dir[0]);
+        printf("\noutput> direction 1: %d",graph->array[currentNode].dir[1]);
+        printf("\noutput> direction 2: %d",graph->array[currentNode].dir[2]);
+        printf("\noutput> direction 3: %d",graph->array[currentNode].dir[3]);
         
     }
     
     dir = dijkstra(graph, 0, finish, &dirSize);
-    printf("\nbot stop");
-    printArr(dir, dirSize); // +1 kyu kiya nai pata
+    printf("\noutput> bot stop");
+
+    printf("\noutput> follow this direction from start node in the next run to get shortest path");
+    printDir(dir, dirSize);
     // BOT STOP
     
     return 0;
