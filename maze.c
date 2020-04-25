@@ -3,8 +3,8 @@
 // global variable to be used internally in this library
 struct Graph* graph = NULL;
 int currentNode=0, prevNode=0;        
-int turns = 0;                      // total paths left to check in the scanned area ... iska naam pathRemaining kar
-int finish = -1;                    // store the index number of end node   why max? try -1
+int turns = 0;                      // total paths left to check in the scanned area
+int finish = -1;                    // store the index number of end node
 bool end = 0;
 
 
@@ -49,11 +49,6 @@ void addEdge(int src, int dest, int weight, int dirSrc)
 	struct AdjListNode* newNode = newAdjListNode(dest, weight,dirSrc); 
 	newNode->next = graph->array[src].head; 
 	graph->array[src].head = newNode; 
-
-	// Since graph is undirected, add an edge from dest to src also 
-	// newNode = newAdjListNode(src, weight,dirDest); 
-	// newNode->next = graph->array[dest].head; 
-	// graph->array[dest].head = newNode; 
 }
 
 struct Graph* getGraph(){
