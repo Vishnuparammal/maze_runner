@@ -4,7 +4,8 @@
 #include <stdbool.h> 
 #include <stdio.h> 
 #include <stdlib.h> 
-#include <limits.h> 
+#include <limits.h>
+#include <math.h>
 
 #define NORTH 0
 #define EAST 1
@@ -15,7 +16,7 @@
 struct AdjListNode 
 { 
 	int dest; 
-	int weight;
+	float weight;
 	int dir; 
 	struct AdjListNode* next; 
 }; 
@@ -24,8 +25,8 @@ struct AdjListNode
 struct AdjList 
 { 
 	struct AdjListNode* head; // pointer to head node of list 
-	int X;
-	int Y;
+	float X;
+	float Y;
 	int incomplete;
 	int dir[4];
 }; 
@@ -42,7 +43,7 @@ struct Graph
 struct MinHeapNode 
 { 
     int  v; 
-    int dist; 
+    float dist; 
 }; 
   
 // Structure to represent a min heap 
@@ -69,7 +70,7 @@ extern void initializeMaze();
 //				dirSize	reference variable that holds the number of turns to be taken
 // returns: 	direction array to the next node
 //				NULL when the entire maze is scanned
-extern int* scanMaze(int X, int Y, int prevDir, int currDir, int dist, bool nodeEnd, int dir[], int* dirSize);
+extern int* scanMaze(float X, float Y, int prevDir, int currDir, float dist, bool nodeEnd, int dir[], int* dirSize, float error);
 
 // print the graph
 extern void printGraph();

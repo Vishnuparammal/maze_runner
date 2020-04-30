@@ -12,7 +12,7 @@ bool end = 0;
 // Construct a graph
 
 // A utility function to create a new adjacency list node 
-struct AdjListNode* newAdjListNode(int dest, int weight, int dir) 
+struct AdjListNode* newAdjListNode(int dest, float weight, int dir) 
 { 
 	struct AdjListNode* newNode = (struct AdjListNode*) malloc(sizeof(struct AdjListNode)); 
 	newNode->dest = dest;       // node index
@@ -42,7 +42,7 @@ void updateGraph()
         graph->array[graph->V-1].dir[i] = -1;
 }
 
-void addEdge(int src, int dest, int weight, int dirSrc) 
+void addEdge(int src, int dest, float weight, int dirSrc) 
 { 
 	// Add an edge from src to dest. A new node is added to the adjacency 
 	// list of src. The node is added at the beginning 
@@ -51,18 +51,21 @@ void addEdge(int src, int dest, int weight, int dirSrc)
 	graph->array[src].head = newNode; 
 }
 
-struct Graph* getGraph(){
+struct Graph* getGraph()
+{
     return graph;
 }
 
-void printGraph(){
-    for(int i=0; i<graph->V; i++){
+void printGraph()
+{
+    for(int i=0; i<graph->V; i++)
+    {
         printf("node %d: \n",i);
-        printf("X: %d, Y: %d, incomplete: %d\n",graph->array[i].X, graph->array[i].Y, graph->array[i].incomplete);
+        printf("X: %f, Y: %f, incomplete: %d\n",graph->array[i].X, graph->array[i].Y, graph->array[i].incomplete);
         struct AdjListNode* pCrawl = graph->array[i].head;
         while(pCrawl)
         {
-            printf("dir: %d, dist: %d, node: %d\n", pCrawl->dir, pCrawl->weight, pCrawl->dest);
+            printf("dir: %d, dist: %f, node: %d\n", pCrawl->dir, pCrawl->weight, pCrawl->dest);
             pCrawl = pCrawl->next;
         }
         printf("\n");
@@ -76,21 +79,20 @@ void printDir(int dist[], int n)
         printf("%d \t\t %d\n", i, dist[i]); 
 }
  
-void printArr(int dist[], int n) 
+void printArr(float dist[], int n) 
 { 
     printf("\nVertex \t\t Distance\n"); 
     for (int i = 0; i < n; ++i) 
-        printf("%d \t\t %d\n", i, dist[i]); 
+        printf("%d \t\t %f\n", i, dist[i]); 
 } 
 
 /************************************************************************************/
 // Dijkstra - shortest path algorithm
   
 // A utility function to create a new Min Heap Node 
-struct MinHeapNode* newMinHeapNode(int v, int dist) 
+struct MinHeapNode* newMinHeapNode(int v, float dist) 
 { 
-    struct MinHeapNode* minHeapNode = 
-           (struct MinHeapNode*) malloc(sizeof(struct MinHeapNode)); 
+    struct MinHeapNode* minHeapNode = (struct MinHeapNode*) malloc(sizeof(struct MinHeapNode)); 
     minHeapNode->v = v; 
     minHeapNode->dist = dist; 
     return minHeapNode; 
@@ -99,13 +101,11 @@ struct MinHeapNode* newMinHeapNode(int v, int dist)
 // A utility function to create a Min Heap 
 struct MinHeap* createMinHeap(int capacity) 
 { 
-    struct MinHeap* minHeap = 
-         (struct MinHeap*) malloc(sizeof(struct MinHeap)); 
+    struct MinHeap* minHeap = (struct MinHeap*) malloc(sizeof(struct MinHeap)); 
     minHeap->pos = (int *)malloc(capacity * sizeof(int)); 
     minHeap->size = 0; 
     minHeap->capacity = capacity; 
-    minHeap->array = 
-         (struct MinHeapNode**) malloc(capacity * sizeof(struct MinHeapNode*)); 
+    minHeap->array = (struct MinHeapNode**) malloc(capacity * sizeof(struct MinHeapNode*)); 
     return minHeap; 
 } 
   
@@ -127,13 +127,11 @@ void minHeapify(struct MinHeap* minHeap, int idx)
     left = 2 * idx + 1; 
     right = 2 * idx + 2; 
   
-    if (left < minHeap->size && 
-        minHeap->array[left]->dist < minHeap->array[smallest]->dist ) 
-      smallest = left; 
+    if (left < minHeap->size && minHeap->array[left]->dist < minHeap->array[smallest]->dist ) 
+        smallest = left; 
   
-    if (right < minHeap->size && 
-        minHeap->array[right]->dist < minHeap->array[smallest]->dist ) 
-      smallest = right; 
+    if (right < minHeap->size && minHeap->array[right]->dist < minHeap->array[smallest]->dist ) 
+        smallest = right; 
   
     if (smallest != idx) 
     { 
@@ -184,7 +182,7 @@ struct MinHeapNode* extractMin(struct MinHeap* minHeap)
   
 // Function to decreasy dist value of a given vertex v. This function 
 // uses pos[] of min heap to get the current index of node in min heap 
-void decreaseKey(struct MinHeap* minHeap, int v, int dist) 
+void decreaseKey(struct MinHeap* minHeap, int v, float dist) 
 { 
     // Get the index of v in  heap array 
     int i = minHeap->pos[v]; 
@@ -210,9 +208,9 @@ void decreaseKey(struct MinHeap* minHeap, int v, int dist)
 // 'v' is in min heap or not 
 bool isInMinHeap(struct MinHeap *minHeap, int v) 
 { 
-   if (minHeap->pos[v] < minHeap->size) 
-     return true; 
-   return false; 
+    if (minHeap->pos[v] < minHeap->size) 
+        return true; 
+    return false; 
 }
   
 void reverseArray(int arr[],int start, int end)
@@ -229,7 +227,7 @@ void reverseArray(int arr[],int start, int end)
 
 int* getDirection(int parent[], int src, int dest, int* dirSize)
 {
-    int min = INT_MAX;
+    float min = INT_MAX;
     struct AdjListNode* pCrawl = NULL;
     int* dir = (int*)malloc(sizeof(int));
     int capacity = 0;
@@ -262,14 +260,15 @@ int* getDirection(int parent[], int src, int dest, int* dirSize)
 int* dijkstra(int src, int dest, int* dirSize) 
 { 
     int V = graph->V;   // Get the number of vertices in graph 
-    int dist[V];        // dist values used to pick minimum weight edge in cut 
-    int parent[V];
+    float* dist = (float*)malloc(V * sizeof(float));        // dist values used to pick minimum weight edge in cut 
+    int* parent = (int*)malloc(V * sizeof(int));
   
     // minHeap represents set E 
     struct MinHeap* minHeap = createMinHeap(V); 
   
     // Initialize min heap with all vertices. dist value of all vertices  
-    for (int v = 0; v < V; ++v) { 
+    for (int v = 0; v < V; ++v)
+    { 
         parent[v]=-1;
         dist[v] = INT_MAX; 
         minHeap->array[v] = newMinHeapNode(v, dist[v]); 
@@ -287,7 +286,8 @@ int* dijkstra(int src, int dest, int* dirSize)
   
     // In the following loop, min heap contains all nodes 
     // whose shortest distance is not yet finalized. 
-    while (!isEmpty(minHeap)){ 
+    while (!isEmpty(minHeap))
+    { 
         // Extract the vertex with minimum distance value 
         struct MinHeapNode* minHeapNode = extractMin(minHeap); 
         int u = minHeapNode->v; // Store the extracted vertex number 
@@ -295,7 +295,8 @@ int* dijkstra(int src, int dest, int* dirSize)
         // Traverse through all adjacent vertices of u (the extracted 
         // vertex) and update their distance values 
         struct AdjListNode* pCrawl = graph->array[u].head; 
-        while (pCrawl != NULL){ 
+        while (pCrawl != NULL)
+        { 
             int v = pCrawl->dest; 
   
             // If shortest distance to v is not finalized yet, and distance to v 
@@ -326,7 +327,8 @@ void initializeMaze()
     turns = 1;  
 }
 
-int ruleNESW(){
+int ruleNESW()
+{
     for(int i=0; i<4; i++)
         if(graph->array[currentNode].dir[i] == 0)
             return i;
@@ -347,7 +349,7 @@ void printLogs()
 }
 
 // returns an array of direction
-int* scanMaze(int X, int Y, int prevDir, int currDir, int dist, bool nodeEnd, int dir[], int* dirSize)
+int* scanMaze(float X, float Y, int prevDir, int currDir, float dist, bool nodeEnd, int dir[], int* dirSize, float error)
 {
     // printf("\ndebug> scanMaze");
     int* nextDir = (int*)malloc(sizeof(int));
@@ -365,8 +367,9 @@ int* scanMaze(int X, int Y, int prevDir, int currDir, int dist, bool nodeEnd, in
     int search = 0;
     for (search=0;search<graph->V;search++)
     {
-        if(X==graph->array[search].X&&Y==graph->array[search].Y)
+        if( fabs(X - graph->array[search].X) <= error && fabs(Y - graph->array[search].Y) <= error)
         {
+            // printf("\ndebug> old node");
             currentNode=search;
             break;
         }
@@ -382,7 +385,8 @@ int* scanMaze(int X, int Y, int prevDir, int currDir, int dist, bool nodeEnd, in
         graph->array[currentNode].X = X;
         graph->array[currentNode].Y = Y;
         // check if this node is end node
-        if(nodeEnd){
+        if(nodeEnd)
+        {
             // printf("\ndebug> end true");
             finish = currentNode;
             end = nodeEnd;

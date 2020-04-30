@@ -27,11 +27,12 @@ uses dijkstras algorithm for finding shortest path
 
 int main()
 {
-    int X=0, Y=0;
+    float X=0, Y=0;
     int prevDir = -1, currDir = -1;
-    int dist = 0;
+    float dist = 0;
     int nodeEnd = 0;
     int dir[4];
+    float error = 0;
 
     bool nodeDetected = true;
 
@@ -44,15 +45,15 @@ int main()
     while(nodeDetected)
     {
         printf("input> X: ");
-        scanf("%d", &X);
+        scanf("%f", &X);
         printf("input> Y: ");
-        scanf("%d", &Y);
+        scanf("%f", &Y);
         printf("input> prevDir: ");
         scanf("%d", &prevDir);
         printf("input> currDir: ");
         scanf("%d", &currDir);
         printf("input> dist: ");
-        scanf("%d", &dist);
+        scanf("%f", &dist);
         printf("input> nodeEnd: ");
         scanf("%d", &nodeEnd);
         printf("input> NORTH: ");
@@ -63,7 +64,7 @@ int main()
         scanf("%d", &dir[SOUTH]);
         printf("input> WEST: ");
         scanf("%d", &dir[WEST]);
-        nextDir = scanMaze(X, Y, prevDir, currDir, dist, nodeEnd, dir, &dirSize);
+        nextDir = scanMaze(X, Y, prevDir, currDir, dist, nodeEnd, dir, &dirSize, error);
         if(!nextDir)
             break;
         printDir(nextDir, dirSize);
