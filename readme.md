@@ -1,16 +1,12 @@
 *maze* is a C library for solving maze by a line follower bot 
 
-Build the library as object file
+Build the example code and libraries
 
-	$ gcc -c maze.c -o maze
-
-Build the example code and link with library
-
-    $ gcc bot.c maze
+	$ make all
 
 Run the example code
 
-	$ ./a.out
+	$ ./bot
 
 To solve the maze in `samples/maze1`
 Copy everything from the file `samples/input1.txt`
