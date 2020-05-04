@@ -28,7 +28,7 @@ struct AdjList
 	float X;
 	float Y;
 	int incomplete;
-	int dir[4];
+	float dir[4];
 }; 
 
 // A structure to represent a graph. A graph is an array of adjacency lists. 
@@ -70,7 +70,7 @@ extern void initializeMaze();
 //				dirSize	reference variable that holds the number of turns to be taken
 // returns: 	direction array to the next node
 //				NULL when the entire maze is scanned
-extern int* scanMaze(float X, float Y, int prevDir, int currDir, float dist, bool nodeEnd, int dir[], int* dirSize, float error);
+extern int* scanMaze(float X, float Y, int prevDir, int currDir, float dist, bool nodeEnd, float dir[], int* dirSize, float error);
 
 // print the graph
 extern void printGraph();
@@ -80,6 +80,6 @@ extern void printGraph();
 extern int* shortestPath(int* dirSize);
 
 // used to print the result of scanMaze() or shortestPath()
-extern void printDir(int dist[], int n);
+extern void printDir(int dir[], int n);
 
 #endif

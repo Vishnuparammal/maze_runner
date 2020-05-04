@@ -72,11 +72,11 @@ void printGraph()
     }
 }
 
-void printDir(int dist[], int n) 
+void printDir(int dir[], int n) 
 { 
     printf("\nStep \t\t Direction\n"); 
     for (int i = 0; i < n; ++i) 
-        printf("%d \t\t %d\n", i, dist[i]); 
+        printf("%d \t\t %d\n", i, dir[i]); 
 }
  
 void printArr(float dist[], int n) 
@@ -227,7 +227,7 @@ void reverseArray(int arr[],int start, int end)
 
 int* getDirection(int parent[], int src, int dest, int* dirSize)
 {
-    float min = INT_MAX;
+    float min = (float)INT_MAX;
     struct AdjListNode* pCrawl = NULL;
     int* dir = (int*)malloc(sizeof(int));
     int capacity = 0;
@@ -237,7 +237,7 @@ int* getDirection(int parent[], int src, int dest, int* dirSize)
         capacity++;
         dir = (int*)realloc(dir,capacity*sizeof(int));
         nx = parent[px];
-        min = INT_MAX;
+        min = (float)INT_MAX;
         pCrawl = graph->array[nx].head;
         while(pCrawl!=NULL)
         {
@@ -270,7 +270,7 @@ int* dijkstra(int src, int dest, int* dirSize)
     for (int v = 0; v < V; ++v)
     { 
         parent[v]=-1;
-        dist[v] = INT_MAX; 
+        dist[v] = (float)INT_MAX; 
         minHeap->array[v] = newMinHeapNode(v, dist[v]); 
         minHeap->pos[v] = v; 
     } 
@@ -342,14 +342,14 @@ void printLogs()
     printf("\noutput> current: %d",currentNode);
     printf("\noutput> finish: %d",finish);
     printf("\noutput> incomplete: %d",graph->array[currentNode].incomplete);
-    printf("\noutput> direction 0: %d",graph->array[currentNode].dir[0]);
-    printf("\noutput> direction 1: %d",graph->array[currentNode].dir[1]);
-    printf("\noutput> direction 2: %d",graph->array[currentNode].dir[2]);
-    printf("\noutput> direction 3: %d",graph->array[currentNode].dir[3]); 
+    printf("\noutput> direction 0: %f",graph->array[currentNode].dir[0]);
+    printf("\noutput> direction 1: %f",graph->array[currentNode].dir[1]);
+    printf("\noutput> direction 2: %f",graph->array[currentNode].dir[2]);
+    printf("\noutput> direction 3: %f",graph->array[currentNode].dir[3]); 
 }
 
 // returns an array of direction
-int* scanMaze(float X, float Y, int prevDir, int currDir, float dist, bool nodeEnd, int dir[], int* dirSize, float error)
+int* scanMaze(float X, float Y, int prevDir, int currDir, float dist, bool nodeEnd, float dir[], int* dirSize, float error)
 {
     // printf("\ndebug> scanMaze");
     int* nextDir = (int*)malloc(sizeof(int));
