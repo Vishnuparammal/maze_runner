@@ -1,9 +1,11 @@
 ## About the project
 **Maze** is a C library that is capable of scanning a complex maze and find the shortest path to end using Dijkstras algorithm. It can function independently as well as on any simulator or hardware. The same has been used to simulate a line follower robot on Coppeliasim ( VREP ) using its legacy remote API in C. 
 ### Code
-`samples`			-> sample mazes for tests
-`src` 					-> contains the *maze* library, *vrep* sim control code and api libraries
-`vrep_scenes`	-> contains coppeliasim scenes
+`samples`-> sample mazes for tests
+
+`src`-> contains the *maze* library, *vrep* sim control code and api libraries
+
+`vrep_scenes`-> contains coppeliasim scenes
 
 ## Getting Started
 ### Prerequisites
@@ -11,7 +13,9 @@
 * [GNU make](https://www.gnu.org/software/make/)
 ### Build
 If your vrep executable is in the default location
+
 Windows 10: `C:\Program Files\CoppeliaRobotics\CoppeliaSimEdu`
+
 Ubuntu 16.04: `~/CoppeliaSim_Edu_V4_0_0_Ubuntu16_04/`
 
 	$ make all
