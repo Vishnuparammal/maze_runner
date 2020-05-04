@@ -24,7 +24,7 @@ If the path is different
 
 	$ make all VREPPATH=<path> 
 
-*<path>* must be in double quotes if it contains space characters
+*path* must be in double quotes if it contains space characters
 ### Usage
 * Library
 	1. `src/maze.c` is the core library implementing the maze solving algorithm.
