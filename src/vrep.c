@@ -292,6 +292,8 @@ int main(int argc,char* argv[])
 
         // while we are connected
         while (simxGetConnectionId(clientID)!=-1){
+            // printf("\ndebug> connected");
+            
             // read position
             simxGetObjectPosition(clientID, gspotHandle, -1, position, simx_opmode_buffer);
 
@@ -299,14 +301,18 @@ int main(int argc,char* argv[])
             readSensor(clientID, sensorHandle, n, sensorValue);
             invert(sensorValue, n);
 
-            end = 0;
-
-            // wait till the last value of sensor has been recieved
-            if(sensorValue[n-1] == 1){
-                continue;
+            // wait till all sensor values have been recieved
+            int sensorError = 0;
+            for(int i=0; i<n; i++){
+                if(sensorValue[i] <= 0 || sensorValue[i] >= 1){
+                    sensorError = 1;
+                    break;
+                }
             }
+            if(sensorError) continue;
 
             // initialization
+            end = 0;
             sum = 0;
             pos = 0;
             leftMotorSpeed = optspeed;
