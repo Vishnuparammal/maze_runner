@@ -1,5 +1,9 @@
 #include "vrep.h"
 
+int mod(int a, int b){
+    return (a<0)?(a%b+b):(a%b);
+}
+
 int isOnLine(float sensorValue){
     return(sensorValue > 0.7 ? 1:0 );
 }
@@ -18,7 +22,7 @@ void invert(float sensorValue[], int n){
 
 // get opposite direction
 int invertDir(int dir){
-    return (dir + 2) % 4;
+    return mod(dir + 2, 4);
 }
 
 void equateArray(float arr1[], float arr2[], int n){
@@ -68,7 +72,7 @@ void botTurn(int clientID, int sensorHandle[], int n, float sensorValue[], int l
     float leftMotorSpeed;
     float rightMotorSpeed;
 
-    *noseDir = (*noseDir + lr) % 4;
+    *noseDir = mod(*noseDir + lr, 4);
 
     // no turn
     if (lr == 0){
@@ -189,9 +193,9 @@ int nodePattern(int clientID, int sensorHandle[], int n, float sensorValue[], fl
     if (leftTrigger == 0 || rightTrigger == 0){
         int currDir = invertDir(noseDir);
         dir[currDir] = 0;
-        dir[(currDir+1)%4] = leftTrigger;
-        dir[(currDir+2)%4] = forwardTrigger;
-        dir[(currDir+3)%4] = rightTrigger;
+        dir[mod(currDir+1, 4)] = leftTrigger;
+        dir[mod(currDir+2, 4)] = forwardTrigger;
+        dir[mod(currDir+3, 4)] = rightTrigger;
         //printf("\ndebug> left: %d, forward: %d, right: %d\n",leftTrigger, forwardTrigger, rightTrigger);
     }
 
@@ -200,9 +204,9 @@ int nodePattern(int clientID, int sensorHandle[], int n, float sensorValue[], fl
         *end = 1;
         int currDir = invertDir(noseDir);
         dir[currDir] = 0;
-        dir[(currDir+1)%4] = -1;
-        dir[(currDir+2)%4] = -1;
-        dir[(currDir+3)%4] = -1;
+        dir[mod(currDir+1, 4)] = -1;
+        dir[mod(currDir+2, 4)] = -1;
+        dir[mod(currDir+3, 4)] = -1;
         *reverseTrigger = -1;
     }
     // set end trigger if node is not end and has right turn
@@ -356,7 +360,6 @@ int main(int argc,char* argv[])
                 // printf("\ndebug> TURNING %dn", turnDir);
                 botTurn(clientID, sensorHandle, n, sensorValue, leftMotorHandle, rightMotorHandle, optspeed, turnDir, reverseTrigger, &noseDir);
                 prevDir = nextDir[dirSize];
-                noseDir = nextDir[dirSize];
                 
                 // print the graph obtained till now
                 printGraph();
