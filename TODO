@@ -1,0 +1,21 @@
+Changes in algorithm
+    1. When algorithm tells bot to return to a particular node, How do we determine the value of "currentNode" in the next iteration ?
+        currently: bot goes in the direction given by algo. Bot calculates the coordinates at this node and passes to MAZE. MAZE compares it to existing node coordinates to find the value of "currentNode".
+        proposed : if MAZE tells bot to go to a particular node, dont process the coordinates again when bot reaches that node. Use the value given by MAZE in previous iteration
+    2. When a completely explored node is reached, Which node should the bot go to next ?
+        currently: if n nodes have been encountered, and current completely explored node is i, find unexplored node in this order {i, i+1, ..., n, 0, 1, ..., i-1}
+        proposed: find the next incomplete node nearest to current node. {i+1, i-1, i+2, i-2, ...}. (find better methods)
+    3. Should the control of graph be given to user ?
+        currently: the entire graph is constructed and shortest path calculated by MAZE. If user is given control, any changes to graph will lead to bricking of code.
+        proposed : give read access of graph and other control variables like currentNode to user program. This will give freedom to user to optimize the MAZE library as per their use 
+    4. Is it ok to use global variables in library ?
+        currently: the graph and other control variables shared by multiple functions have been declared globally
+        proposed : use a mazeSolver class to hold all functions and control variables
+Feature addition
+    1. If there are two paths with equal distance, choose the path with LEAST TURNS
+    2. Add a parmeter to function initMaze() so that user can choose rule for maze solving eg. leftHand rule, rightHand rule, NESW, randomize, etc.
+    3. If scanning the entire map is not mandatory to user. We can find shortest in less time. Eg. stop scan if end is found and there is only one path left to scan(it is a dead end)
+    4. If the end node contains multiple point of entry. The algorithm does not account for this case.
+    5. Feature to resume scanning maze form a checkpoint
+    6. Handle path with angles 45 and 135
+    7. Use OOP
