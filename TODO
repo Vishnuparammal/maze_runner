@@ -18,4 +18,4 @@ Feature addition
     4. If the end node contains multiple point of entry. The algorithm does not account for this case.
     5. Feature to resume scanning maze form a checkpoint
     6. Handle path with angles 45 and 135
-    7. Use OOP
+    7. Track memory usage and reduce it for use in microcontrollers
